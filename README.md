@@ -1,3 +1,2 @@
 # mod-notifier
-Void Falls Moderator Notifier, on the whole group 
-- Moderator Notifier, on join/leave
+Void Falls Mod Notifier for all games [DA STRIKE, DA UPHILL, DA DOWNHILL]
