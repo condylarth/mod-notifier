@@ -1,0 +1,93 @@
+-- // [ V1.3 ] -- \\
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local groupId = 693335996
+
+repeat task.wait() until game:IsLoaded()
+task.wait(0)
+
+local function showUI(message)
+    local screenGui = LocalPlayer:FindFirstChild("NotificationGui")
+    if not screenGui then
+        screenGui = Instance.new("ScreenGui")
+        screenGui.Name = "NotificationGui"
+        screenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+    end
+
+    local notification = Instance.new("Frame")
+    notification.Size = UDim2.new(0, 300, 0, 100)
+    notification.Position = UDim2.new(1, -320, 1, -120)
+    notification.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    notification.BackgroundTransparency = 0.5
+    notification.Parent = screenGui
+
+    local messageLabel = Instance.new("TextLabel")
+    messageLabel.Size = UDim2.new(1, -40, 1, 0)
+    messageLabel.Position = UDim2.new(0, 10, 0, 0)
+    messageLabel.Text = message
+    messageLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    messageLabel.BackgroundTransparency = 1
+    messageLabel.TextWrapped = true
+    messageLabel.TextSize = 18
+    messageLabel.Parent = notification
+
+    local closeButton = Instance.new("TextButton")
+    closeButton.Size = UDim2.new(0, 30, 0, 30)
+    closeButton.Position = UDim2.new(1, -40, 0, 10)
+    closeButton.Text = "X"
+    closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    closeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    closeButton.BackgroundTransparency = 0.7
+    closeButton.Parent = notification
+
+    closeButton.MouseButton1Click:Connect(function()
+        notification:Destroy()
+    end)
+
+    task.delay(5, function()
+        if notification and notification.Parent then
+            notification:Destroy()
+        end
+    end)
+end
+
+local function checkForMods()                           
+    local modFound = false 
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr:IsInGroup(groupId) then
+            modFound = true
+            local success, rankName = pcall(function()
+                return plr:GetRoleInGroup(groupId)
+            end)
+            if success then
+                showUI("Moderator Joined: " .. plr.Name .. "\nRank: " .. rankName)
+            else
+                showUI("Moderator Joined: " .. plr.Name)
+            end
+        end
+    end
+    if not modFound then
+        showUI("No moderators in current server.\n")
+    end
+end
+
+Players.PlayerRemoving:Connect(function(plr)
+    if plr:IsInGroup(groupId) then
+        showUI("Moderator Left: " .. plr.Name)
+    end
+end)
+
+Players.PlayerAdded:Connect(function(plr)
+    if plr:IsInGroup(groupId) then
+        local success, rankName = pcall(function()
+            return plr:GetRoleInGroup(groupId)
+        end)
+        if success then
+            showUI("Moderator Joined: " .. plr.Name .. "\nRank: " .. rankName)
+        else
+            showUI("Moderator Joined: " .. plr.Name)
+        end
+    end
+end)
+
+checkForMods()
